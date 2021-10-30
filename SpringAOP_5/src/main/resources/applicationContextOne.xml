@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+<bean id="performanceTraceAdvice" class="dorres.spring.common.ProfilingAdvice"></bean>
+<aop:config>
+	<aop:aspect id="traceAspect1" ref="performanceTraceAdvice">
+		<aop:pointcut expression="execution(public * dorres.spring.board.service..*(..))" id="publicMethod"/>
+		<aop:around method="trace" pointcut-ref="publicMethod"/>
+	</aop:aspect>
+	
+	<aop:aspect id="traceAspect2" ref="performanceTraceAdvice">
+		<aop:around pointcut="execution(public * dorres.spring.member.service..*(..))" method="trace"/>
+	</aop:aspect>
+</aop:config>
+
+<bean id="writeArticleService" class="dorres.spring.board.service.WriteArticleServiceImpl">
+	<constructor-arg><ref bean="articleDAO" /></constructor-arg>
+</bean>
+<bean id="articleDAO" class="dorres.spring.board.dao.OracleArticleDAO"></bean>
+
+<bean id="memberService" class="dorres.spring.member.service.MemberServiceImpl"></bean>
+</beans>
